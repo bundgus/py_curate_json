@@ -1,0 +1,32 @@
+from __future__ import with_statement
+try:
+    import json
+except ImportError:
+    from com.xhaus.jyson import JysonCodec as json
+import org.apache.pig.data.DataType as DataType
+import org.apache.pig.impl.logicalLayer.schema.SchemaUtil as SchemaUtil
+
+
+@outputSchemaFunction("{{ prefixname }}_enumerate_bag_schema")
+def json_to_bag(jsonstring):
+    bag = []
+    # each element in the bag must be a tuple
+    for x in range(0, 5):
+        bag.append(({% for part in parts %}
+            '{{part}}'{% if loop.last != True %}, {% endif %}{% endfor %}
+            ))
+    return bag
+
+
+# define the schema for enumerate_bag UDF
+@schemaFunction("{{ prefixname }}-enumerate_bag_schema")
+def {{ prefixname }}_enumerate_bag_schema(input):
+    fields = []{% for part in parts %}
+    fields.append('{{part}}'){% endfor %}
+
+    dt = []
+    {% for part in parts %}
+    dt.append(DataType.CHARARRAY){% endfor %}
+
+    # return new schema
+    return SchemaUtil.newBagSchema(fields, dt)
