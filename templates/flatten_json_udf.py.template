@@ -6,15 +6,22 @@ except ImportError:
 import org.apache.pig.data.DataType as DataType
 import org.apache.pig.impl.logicalLayer.schema.SchemaUtil as SchemaUtil
 
+default_insert_values ={ {% for part in parts %}
+    '{{part}}': None{% if loop.last != True %},{% endif %}{% endfor %}
+    }
+
 
 @outputSchemaFunction("{{ prefixname }}_enumerate_bag_schema")
 def json_to_bag(jsonstring):
     djson = json.loads(jsonstring)
+
+    insert_values = default_insert_values.copy()
+
     bag = []
     # each element in the bag must be a tuple
     for x in range(0, 5):
         bag.append(({% for part in parts %}
-            '{{part}}'{% if loop.last != True %}, {% endif %}{% endfor %}
+            insert_values['{{part}}']{% if loop.last != True %}, {% endif %}{% endfor %}
             ))
     return bag
 
