@@ -9,6 +9,7 @@ import org.apache.pig.impl.logicalLayer.schema.SchemaUtil as SchemaUtil
 
 @outputSchemaFunction("{{ prefixname }}_enumerate_bag_schema")
 def json_to_bag(jsonstring):
+    djson = json.loads(jsonstring)
     bag = []
     # each element in the bag must be a tuple
     for x in range(0, 5):
