@@ -7,6 +7,7 @@ from create_avro_schema import createavroschema
 from create_json_to_parquet_pig_script import create_json_to_parquet_pig_script
 from create_pig_udf import create_pig_udf
 from create_json_schema import create_json_schema
+from create_schema_outline import create_schema_outline
 
 debugflag = False
 
@@ -84,5 +85,4 @@ if __name__ == "__main__":
     #createavroschema(G, 'rootnode')
     create_json_to_parquet_pig_script(G, parts=partlist, prefixname=prefixname)
     create_pig_udf(G, parts=partlist, prefixname=prefixname)
-
-
+    create_schema_outline(G)

@@ -14,8 +14,9 @@ default_insert_values ={ {% for part in parts %}
 @outputSchemaFunction("{{ prefixname }}_enumerate_bag_schema")
 def json_to_bag(jsonstring):
     djson = json.loads(jsonstring)
-
     insert_values = default_insert_values.copy()
+
+    insert_values['httpAnalytics__clientIP'] = djson['httpAnalytics']['clientIP']
 
     bag = []
     # each element in the bag must be a tuple
