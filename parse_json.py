@@ -175,6 +175,7 @@ def drilllist(jsonnode, igraphnode, rowarray=[]):
     #return rowarray
 
 
+
 filename = r'sample_json/businessRecord-bookingTransaction.json'
 with open(filename, 'r') as f:
     djson = json.loads(f.read())
