@@ -6,6 +6,7 @@ class JSONGraphNode:
         self.nodename = nodename
 
     successors = []
+    predecessor = None
     nodename = ''
     attributes = {
         'ajax__actionCode': None,
@@ -114,6 +115,13 @@ class JSONGraphNode:
     }
 
 
+class JSONGraph:
+    elements = {}
+
+    def addnode(self, newnode):
+        self.elements[newnode.nodename] = newnode
+
+
 def create_key(prefix, element_name):
     if prefix == '':
         return str(element_name)
@@ -121,89 +129,66 @@ def create_key(prefix, element_name):
         return str(prefix) + '__' + str(element_name)
 
 
-def drilldict(jsonnode, igraphnode, rowarray=[], elementprefix='', dictdepth=0):
-    #print('elementprefix ', elementprefix)
-    for key in jsonnode:
-        jnode = jsonnode[key]
-        key = create_key(elementprefix, key)
+def drilldict(jsonnode, igraphnode, graph, elementprefix='', dictdepth=0):
+    for jkey in jsonnode:
+        jnode = jsonnode[jkey]
+        jkey = create_key(elementprefix, jkey)
         if isinstance(jnode, dict):
-            drilldict(jnode, igraphnode, rowarray=rowarray, elementprefix=key, dictdepth=dictdepth+1)
+            drilldict(jnode, igraphnode, graph, elementprefix=jkey, dictdepth=dictdepth+1)
         elif not isinstance(jnode, list):
-            key = create_key(igraphnode.nodename, key)
-            #print('leafkey: ' + key + ' value: ' + str(jnode))
-            igraphnode.attributes[key] = str(jnode)
+            #jkey = create_key(igraphnode.nodename, jkey)
+            igraphnode.attributes[jkey] = str(jnode)
 
-    for key in jsonnode:
-        jnode = jsonnode[key]
-        key = create_key(elementprefix, key)
+    for jkey in jsonnode:
+        jnode = jsonnode[jkey]
+        jkey = create_key(elementprefix, jkey)
         if isinstance(jnode, list):
-            # print(key)
-            # print('in dict, list_element_found: ' + str(jnode))
-            # todo: here is where to create new json graph node
-            newigraphnode = JSONGraphNode(key)
-            newigraphnode.attributes = igraphnode.attributes.copy()
-            rowarray.append(newigraphnode)
-            drilllist(jnode, newigraphnode, rowarray=rowarray)
-
-    if dictdepth == 0:
-        pass
-        # rowarray.append(values)
-
-    #return rowarray
+            # here is where to create new json graph node
+            newigraphnode = JSONGraphNode(jkey[:])
+            # newigraphnode.attributes = igraphnode.attributes.copy()
+            newigraphnode.predecessor = igraphnode.nodename
+            graph.addnode(newigraphnode)
+            #rowarray.append(newigraphnode)
+            drilllist(jnode, newigraphnode, graph)
 
 
-def drilllist(jsonnode, igraphnode, rowarray=[]):
+def drilllist(jsonnode, igraphnode, graph):
     for wnode in jsonnode:
         if isinstance(wnode, dict):
             # need to create new node for each array value
-            newigraphnode = JSONGraphNode(igraphnode.nodename)
-            newigraphnode.attributes = igraphnode.attributes.copy()
-            rowarray.append(newigraphnode)
-            drilldict(wnode, igraphnode, rowarray=rowarray)
-        elif isinstance(wnode, list):
-            print('in list, list_element_found: ' + str(wnode))
-            '''
-            key = create_key(igraphnode.nodename, key)
-            jgraphnode = JSONGraphNode(key)
-            drilllist(wnode, values.copy(), jgraphnode, rowarray=rowarray)
-            '''
-        else:
-            '''
-            key = create_key(igraphnode.nodename, wnode)
-            values[key] = wnode
-            '''
-    #return rowarray
+            newigraphnode = JSONGraphNode(igraphnode.nodename[:])
+            # newigraphnode.attributes = igraphnode.attributes.copy()
+            newigraphnode.predecessor = igraphnode.nodename
+            graph.addnode(newigraphnode)
+            # rowarray.append(newigraphnode)
+            drilldict(wnode, newigraphnode, graph, elementprefix=igraphnode.nodename)
+
+
+# here is where the udf function body starts
+def json_to_bag(jsonstring):
+    #  TODO: CREATE GRAPH (DICT) TO STORE GRAPHNODES?  EVERY NODE WITHOUT CHILDREN IS A NEW ROW...?
+
+    djson = json.loads(jsonstring)
+
+    jg = JSONGraph()
+    jgraphnode = JSONGraphNode('')
+    jg.addnode(jgraphnode)
+
+    if isinstance(djson, dict):
+        drilldict(djson, jgraphnode, jg)
+    elif isinstance(djson, list):
+        djson = [djson]
+        drilllist(djson, jgraphnode, jg)
+
+    for node in jg.elements:
+        print(node)
+        for attribute in jg.elements[node].attributes:
+            if jg.elements[node].attributes[attribute] is not None:
+                print('--> ', attribute, jg.elements[node].attributes[attribute])
 
 
 
 filename = r'sample_json/businessRecord-bookingTransaction.json'
 with open(filename, 'r') as f:
-    djson = json.loads(f.read())
-
-# here is where the udf function body starts
-
-row_list = []
-jgraphnode = JSONGraphNode('')
-if isinstance(djson, dict):
-    drilldict(djson, jgraphnode, rowarray=row_list)
-elif isinstance(djson, list):
-    djson = [djson]
-    drilllist(djson, jgraphnode, rowarray=row_list)
-
-
-for rowdict in row_list:
-    # print(rowdict)
-    print('>>>>' + rowdict.nodename)
-    for key in rowdict.attributes:
-        if rowdict.attributes[key] is not None:
-            pass
-            print(key + ' -- ' + str(rowdict.attributes[key]))
-    print('--------------------')
-
-print(len(row_list))
-
-#for key in djson:
-#    print(key)
-
-
-#print(djson['httpAnalytics']['clientIP'])
+    jstring = f.read()
+    json_to_bag(jstring)
