@@ -38,7 +38,6 @@ def drilldict(jsonnode, myG, nodename, nodeprefix):
             if nodeprefix == '':
                 myG.node[nodename][key] = jsonnode[key]
             else:
-                pass
                 myG.node[nodename][nodeprefix + '__' + key] = jsonnode[key]
 
 
@@ -53,6 +52,7 @@ def drilllist(jsonnode, myG, nodename, nodeprefix):
         elif isinstance(wnode, list):
             debug('found a list inside a list', nodename, nodeprefix)
         else:
+            # TODO: add logic for when a list has scalar values only, not a dictionary
             debug('found an element inside a list ' + wnode)
 
 

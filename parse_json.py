@@ -18,12 +18,6 @@ def create_key(prefix, element_name):
 
 def getnodeattributes(jsonnode, graphnode, atpath=''):
 
-    # TODO: add logic for when a list has scalar values only, not a dictionary
-    '''
-              "emails": [
-            "ccc@ccc.com"
-                ]
-    '''
     if isinstance(jsonnode, dict):
         for jnodekey in jsonnode:
             jnode = jsonnode[jnodekey]
@@ -35,16 +29,14 @@ def getnodeattributes(jsonnode, graphnode, atpath=''):
             elif not isinstance(jnode, list):
                 newkey = create_key(atpath, jnodekey)
                 graphnode.attributes[newkey] = str(jnode)
+    # logic for when a list has scalar values only, not a dictionary
+    # e.g. "emails": ["ccc@ccc.com"]
+    else:
+        #print(jsonnode)
+        graphnode.attributes[atpath] = str(jsonnode)
 
 
 def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
-
-    # TODO: add logic for when a list has scalar values only, not a dictionary
-    '''
-              "emails": [
-            "ccc@ccc.com"
-                ]
-    '''
 
     if isinstance(jsonnode, dict):
         for jnodekey in jsonnode:
@@ -64,6 +56,7 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
                     parentgraphnode.successors.append(newigraphnode)
                     getnodeattributes(jnode[key], newigraphnode, atpath=newatpath)
                     buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
+
 
 # here is where the udf function body starts
 def json_to_bag(jsonstring):
@@ -95,17 +88,15 @@ def json_to_bag(jsonstring):
         for suc in node_to_iterate.successors:
             traversegraph(suc, depth=depth+1)
 
-    traversegraph(gn)
+    #traversegraph(gn)
 
-
-    #  TODO: CREATE GRAPH (DICT) TO STORE GRAPHNODES?  EVERY NODE WITHOUT CHILDREN IS A NEW ROW...?
 
     denormrows = []
 
     leafnodes = []
     def findleafnodes(node_to_iterate):
         if len(node_to_iterate.successors) < 1:
-            print('found leaf node: ' + node_to_iterate.nodename)
+            #print('found leaf node: ' + node_to_iterate.nodename)
             leafnodes.append(node_to_iterate)
         for suc in node_to_iterate.successors:
             findleafnodes(suc)
@@ -145,6 +136,7 @@ def json_to_bag(jsonstring):
     'bookingTransaction__reservation__passengers__lastName': None,
     'bookingTransaction__reservation__passengers__nameNumber': None,
     'bookingTransaction__reservation__passengers__passengerIndex': None,
+    'bookingTransaction__reservation__passengers__emails': None,
     'bookingTransaction__reservation__payments__amount__amount': None,
     'bookingTransaction__reservation__payments__amount__currency': None,
     'bookingTransaction__reservation__payments__fopCode': None,
@@ -219,18 +211,18 @@ def json_to_bag(jsonstring):
 }
 
     def crawluptree(leafnode, masterdict):
-        print(leafnode.nodename)
+        #print(leafnode.nodename)
         for at in leafnode.attributes:
-            print(at, leafnode.attributes[at])
+            #print(at, leafnode.attributes[at])
             masterdict[at] = leafnode.attributes[at]
         if leafnode.predecessor is not None:
             crawluptree(leafnode.predecessor, masterdict)
         return masterdict
 
-    print('crawling up leaf nodes')
+    #print('crawling up leaf nodes')
     for ln in leafnodes:
         consolidateddict = crawluptree(ln, attributes.copy())
-        print(consolidateddict)
+        #print(consolidateddict)
         denormrows.append(consolidateddict.copy())
 
     for row in denormrows:
