@@ -123,17 +123,17 @@ def create_key(prefix, element_name):
         return str(prefix) + '__' + str(element_name)
 
 
-def getnodeattributes(jsonnode, graphnode, nodepath=''):
+def getnodeattributes(jsonnode, graphnode, atpath=''):
 
     for jnodekey in jsonnode:
         jnode = jsonnode[jnodekey]
 
         if isinstance(jnode, dict):
-            newnodepath = create_key(nodepath, jnodekey)
-            getnodeattributes(jnode, graphnode, nodepath=newnodepath)
+            newatpath = create_key(atpath, jnodekey)
+            getnodeattributes(jnode, graphnode, atpath=newatpath)
 
         elif not isinstance(jnode, list):
-            newkey = create_key(nodepath, jnodekey)
+            newkey = create_key(atpath, jnodekey)
             graphnode.attributes[newkey] = str(jnode)
 
 
@@ -143,17 +143,18 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
         jnode = jsonnode[jnodekey]
         if isinstance(jnode, dict):
             newnodepath = create_key(nodepath, jnodekey)
-            buildgraph(jnode, parentgraphnode, nodepath=newnodepath)
+            newatpath = create_key(atpath, jnodekey)
+            buildgraph(jnode, parentgraphnode, nodepath=newnodepath, atpath=newatpath)
 
         elif isinstance(jnode, list):
             jnode = dict(enumerate(jnode))
             for key in jnode:
                 newkey = nodepath + '__' + jnodekey[:] + str(key)
+                newatpath = create_key(atpath, jnodekey[:])
                 newigraphnode = JSONGraphNode(newkey)
                 newigraphnode.predecessor = parentgraphnode
                 parentgraphnode.successors.append(newigraphnode)
-                newatpath = create_key(atpath, jnodekey[:])
-                getnodeattributes(jnode[key], newigraphnode, nodepath=newkey)
+                getnodeattributes(jnode[key], newigraphnode, atpath=newatpath)
                 buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
 
 # here is where the udf function body starts
@@ -165,7 +166,7 @@ def json_to_bag(jsonstring):
         djson = dict(enumerate(djson))
 
     gn = JSONGraphNode('rootnode')
-    getnodeattributes(djson, gn, nodepath='')
+    getnodeattributes(djson, gn, atpath='')
     buildgraph(djson, gn)
 
     # create denormalized rows from graph
