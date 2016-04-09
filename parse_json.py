@@ -6,6 +6,7 @@ class JSONGraphNode:
         self.nodename = nodename
         self.successors = []
         self.attributes = {}
+        self.predecessor = None
         '''
         attributes = {
             'ajax__actionCode': None,
@@ -121,10 +122,22 @@ def create_key(prefix, element_name):
     else:
         return str(prefix) + '__' + str(element_name)
 
-def getnodeattributes(jsonnode, graphnode, nodepath=''):
-    pass
 
-def buildgraph(jsonnode, parentgraphnode, nodepath=''):
+def getnodeattributes(jsonnode, graphnode, nodepath=''):
+
+    for jnodekey in jsonnode:
+        jnode = jsonnode[jnodekey]
+
+        if isinstance(jnode, dict):
+            newnodepath = create_key(nodepath, jnodekey)
+            getnodeattributes(jnode, graphnode, nodepath=newnodepath)
+
+        elif not isinstance(jnode, list):
+            newkey = create_key(nodepath, jnodekey)
+            graphnode.attributes[newkey] = str(jnode)
+
+
+def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
     # jsonnode is a dict
     for jnodekey in jsonnode:
         jnode = jsonnode[jnodekey]
@@ -137,25 +150,22 @@ def buildgraph(jsonnode, parentgraphnode, nodepath=''):
             for key in jnode:
                 newkey = nodepath + '__' + jnodekey[:] + str(key)
                 newigraphnode = JSONGraphNode(newkey)
+                newigraphnode.predecessor = parentgraphnode
                 parentgraphnode.successors.append(newigraphnode)
-                buildgraph(jnode[key], newigraphnode, nodepath=newkey)
-
-
-        '''
-        elif not isinstance(jnode, list):
-            #jkey = create_key(igraphnode.nodename, jkey)
-            igraphnode.attributes[jkey] = str(jnode)
-        '''
+                newatpath = create_key(atpath, jnodekey[:])
+                getnodeattributes(jnode[key], newigraphnode, nodepath=newkey)
+                buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
 
 # here is where the udf function body starts
 def json_to_bag(jsonstring):
-    #  TODO: CREATE GRAPH (DICT) TO STORE GRAPHNODES?  EVERY NODE WITHOUT CHILDREN IS A NEW ROW...?
+
 
     djson = json.loads(jsonstring)
     if isinstance(djson, list):
         djson = dict(enumerate(djson))
 
-    gn = JSONGraphNode('')
+    gn = JSONGraphNode('rootnode')
+    getnodeattributes(djson, gn, nodepath='')
     buildgraph(djson, gn)
 
     # create denormalized rows from graph
@@ -165,12 +175,20 @@ def json_to_bag(jsonstring):
         for i in range(depth):
             print('....', end='')
         print(node_to_iterate.nodename)
+        #if node_to_iterate.predecessor is not None:
+        #    print(node_to_iterate.predecessor.nodename)
+        for a in node_to_iterate.attributes:
+            print('              ', end='')
+            for i in range(depth-1):
+                print('    ', end='')
+            print(a, node_to_iterate.attributes[a])
+        print()
         for suc in node_to_iterate.successors:
             traversegraph(suc, depth=depth+1)
 
     traversegraph(gn)
 
-
+    #  TODO: CREATE GRAPH (DICT) TO STORE GRAPHNODES?  EVERY NODE WITHOUT CHILDREN IS A NEW ROW...?
 
 filename = r'sample_json/businessRecord-bookingTransaction.json'
 with open(filename, 'r') as f:
