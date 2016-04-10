@@ -53,7 +53,8 @@ def drilllist(jsonnode, myG, nodename, nodeprefix):
             debug('found a list inside a list', nodename, nodeprefix)
         else:
             # TODO: add logic for when a list has scalar values only, not a dictionary
-            debug('found an element inside a list ' + wnode)
+            #print('found an element inside a list ' + str(wnode))
+            pass
 
 
 def create_flattened_list(graph, nodename='rootnode', parts=[]):
@@ -66,7 +67,8 @@ def create_flattened_list(graph, nodename='rootnode', parts=[]):
 if __name__ == "__main__":
 
     prefixname = 'businessRecord'
-    filename = r'sample_json/analyticsWeb_SSW2010.2015-05-08-14_Original-businessRecord.json'
+    #filename = r'sample_json/analyticsWeb_SSW2010.2015-05-08-14_Original-businessRecord.json'
+    filename = r'sample_json/v12-businessRecord.json'
 
     # First let's build a digraph of lists from the JSON samples (one JSON of the same schema type per line)
     G = nx.DiGraph()
