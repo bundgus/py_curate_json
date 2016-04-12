@@ -83,7 +83,7 @@ if __name__ == "__main__":
     partlist = create_flattened_list(G)
     partlist.sort()
 
-    #create_json_schema(G, prefixname=prefixname)
+    create_json_schema(G, prefixname=prefixname)
     #createavroschema(G, 'rootnode')
     create_json_to_parquet_pig_script(G, parts=partlist, prefixname=prefixname)
     create_pig_udf(G, parts=partlist, prefixname=prefixname)
