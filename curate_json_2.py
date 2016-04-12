@@ -1,7 +1,6 @@
 import json
 import uuid
 
-
 class JSONGraphNode:
     def __init__(self, nodename):
         self.nodename = nodename
