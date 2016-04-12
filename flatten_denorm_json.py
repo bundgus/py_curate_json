@@ -301,8 +301,15 @@ if __name__ == "__main__":
         print(key+' STRING,')
 
     import csv
+
+    filename = r'output/businessRecord-flattened_keys.json'
+    with open(filename, 'r') as f:
+        rawjson = f.read()
+        djson = json.loads(rawjson)
+
     with open('v12_businessRecord.csv', 'w') as awf:
-        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
+        w = csv.DictWriter(awf, sorted(djson.keys()), lineterminator='\n', delimiter='\x01')
+        #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
         #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n')
         w.writeheader()
         w.writerows(agdenormrows)
