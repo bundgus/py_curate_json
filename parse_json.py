@@ -1,7 +1,8 @@
 import json
-
+import uuid
 
 attributes = {
+'json_uuid': None,
 'ajax__actionCode': None,
 'ajax__componentType': None,
 'bookingTransaction__loggedUser__ffnumber': None,
@@ -212,7 +213,9 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
 
 
 # here is where the udf function body starts
-def json_to_bag(jsonstring, denormrows):
+def json_to_bag(jsonstring):
+    denormrows = []
+    jsonuuid = str(uuid.uuid4())
 
     try:
         if jsonstring != '':
@@ -220,8 +223,7 @@ def json_to_bag(jsonstring, denormrows):
         else:
             return
     except:
-        print('unparsable JSON')
-        print(jsonstring)
+        raise Exception('unparsable JSON: ' + jsonstring)
         return
     if isinstance(djson, list):
         djson = dict(enumerate(djson))
@@ -232,6 +234,7 @@ def json_to_bag(jsonstring, denormrows):
 
     # create denormalized rows from graph
 
+    '''
     def traversegraph(node_to_iterate, depth=0):
         print('NODE: ', end='')
         for i in range(depth):
@@ -249,6 +252,7 @@ def json_to_bag(jsonstring, denormrows):
             traversegraph(suc, depth=depth+1)
 
     #traversegraph(gn)
+    '''
 
     leafnodes = []
     def findleafnodes(node_to_iterate):
@@ -267,6 +271,7 @@ def json_to_bag(jsonstring, denormrows):
             masterdict[at] = leafnode.attributes[at]
         if leafnode.predecessor is not None:
             crawluptree(leafnode.predecessor, masterdict)
+        masterdict['json_uuid'] = jsonuuid
         return masterdict
 
     #print('crawling up leaf nodes')
@@ -281,16 +286,23 @@ def json_to_bag(jsonstring, denormrows):
     return denormrows
 
 if __name__ == "__main__":
-    agdenormrows = []
     #filename = r'sample_json/analyticsWeb_SSW2010.2015-05-08-14_Original-businessRecord.json'
     filename = r'sample_json/v12-businessRecord.json'
+
+    agdenormrows =[]
     with open(filename, 'r') as f:
         for line in f:
             jstring = f.readline()
-            json_to_bag(jstring, agdenormrows)
+            denormrows = json_to_bag(jstring)
+            if denormrows is not None:
+                agdenormrows.extend(denormrows)
+
+    for key in sorted(attributes.keys()):
+        print(key+' STRING,')
 
     import csv
-    with open('v12 - businessRecord.csv', 'w') as awf:
-        w = csv.DictWriter(awf, attributes.keys(), lineterminator='\n')
+    with open('v12_businessRecord.csv', 'w') as awf:
+        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
+        #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n')
         w.writeheader()
         w.writerows(agdenormrows)
