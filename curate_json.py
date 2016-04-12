@@ -8,6 +8,7 @@ from create_json_to_parquet_pig_script import create_json_to_parquet_pig_script
 from create_pig_udf import create_pig_udf
 from create_json_schema import create_json_schema
 from create_schema_outline import create_schema_outline
+from create_flattened_keys import create_flattened_keys
 
 debugflag = False
 
@@ -57,12 +58,16 @@ def drilllist(jsonnode, myG, nodename, nodeprefix):
             pass
 
 
-def create_flattened_list(graph, nodename='rootnode', parts=[]):
+def create_flattened_list(graph, nodename='rootnode', parts={}):
     for lkey in graph.node[nodename]:
-        parts.append(lkey)
+        parts[lkey] = None
     for succe in graph.successors(nodename):
         create_flattened_list(graph, nodename=succe, parts=parts)
-    return parts
+
+    pk = parts.keys()
+    pkl = list(pk)
+    pkl.sort()
+    return pkl
 
 if __name__ == "__main__":
 
@@ -81,10 +86,10 @@ if __name__ == "__main__":
 
     # get flattened list of elements
     partlist = create_flattened_list(G)
-    partlist.sort()
 
     create_json_schema(G, prefixname=prefixname)
     #createavroschema(G, 'rootnode')
     create_json_to_parquet_pig_script(G, parts=partlist, prefixname=prefixname)
     create_pig_udf(G, parts=partlist, prefixname=prefixname)
     create_schema_outline(G)
+    create_flattened_keys(partlist, prefixname=prefixname)
