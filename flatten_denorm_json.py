@@ -1,5 +1,9 @@
 import json
 import uuid
+import csv
+
+#from create_avro_schema import createavroschema
+
 
 class JSONGraphNode:
     def __init__(self, nodename):
@@ -57,11 +61,9 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
                     buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
 
 
-masterdict = {}
-
-
+# here is where the udf function body starts
 def curate_json(jsonstring):
-    ldenormrows = []
+    denormrows = []
     jsonuuid = str(uuid.uuid4())
 
     try:
@@ -71,6 +73,7 @@ def curate_json(jsonstring):
             return
     except:
         raise Exception('unparsable JSON: ' + jsonstring)
+        return
     if isinstance(djson, list):
         djson = dict(enumerate(djson))
 
@@ -79,7 +82,6 @@ def curate_json(jsonstring):
     buildgraph(djson, gn)
 
     leafnodes = []
-
     def findleafnodes(node_to_iterate):
         if len(node_to_iterate.successors) < 1:
             leafnodes.append(node_to_iterate)
@@ -88,34 +90,41 @@ def curate_json(jsonstring):
 
     findleafnodes(gn)
 
-    def crawluptree(leafnode):
+    def crawluptree(leafnode, masterdict):
+        #print(leafnode.nodename)
         for at in leafnode.attributes:
+            #print(at, leafnode.attributes[at])
             masterdict[at] = leafnode.attributes[at]
         if leafnode.predecessor is not None:
-            crawluptree(leafnode.predecessor)
+            crawluptree(leafnode.predecessor, masterdict)
         masterdict['json_uuid'] = jsonuuid
         return masterdict
 
     for ln in leafnodes:
-        consolidateddict = crawluptree(ln)
-        ldenormrows.append(consolidateddict.copy())
+        consolidateddict = crawluptree(ln, attributes.copy())
+        denormrows.append(consolidateddict.copy())
 
-    return ldenormrows
+    lmasterdict = {}
+    return denormrows, lmasterdict
 
 if __name__ == "__main__":
     filename = r'sample_json/v12-businessRecord.json'
+
+    # load attributes dictionary
+    filename = r'output/businessRecord_flattened_keys.json'
+    with open(filename, 'r') as f:
+        rawjson = f.read()
+        attributes = json.loads(rawjson)
 
     agdenormrows =[]
     with open(filename, 'r') as f:
         for line in f:
             jstring = f.readline()
-            denormrows = curate_json(jstring)
+            denormrows, masterdict = curate_json(jstring)
             if denormrows is not None:
                 agdenormrows.extend(denormrows)
 
-    for key in masterdict:
-        masterdict[key] = None
-
-    with open(r'output/businessRecord_flattened_keys.json', 'w') as fk:
-        fk.write(json.dumps(masterdict, sort_keys=True, indent=4, separators=(',', ': ')))
-    print('flat schema written to output/businessRecord_flattened_keys.json')
+    with open(r'output/v12_businessRecord.csv', 'w') as awf:
+        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
+        w.writeheader()
+        w.writerows(agdenormrows)
