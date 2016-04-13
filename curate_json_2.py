@@ -72,7 +72,6 @@ def curate_json(jsonstring):
             return
     except:
         raise Exception('unparsable JSON: ' + jsonstring)
-        return
     if isinstance(djson, list):
         djson = dict(enumerate(djson))
 
@@ -115,5 +114,9 @@ if __name__ == "__main__":
             if denormrows is not None:
                 agdenormrows.extend(denormrows)
 
-    for key in sorted(masterdict.keys()):
-        print(key+' STRING,')
+    for key in masterdict:
+        masterdict[key] = None
+
+    with open(r'output/businessRecord_flattened_keys.json', 'w') as fk:
+        fk.write(json.dumps(masterdict, sort_keys=True, indent=4, separators=(',', ': ')))
+    print('flat schema written to output/businessRecord_flattened_keys.json')
