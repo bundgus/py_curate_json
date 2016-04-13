@@ -105,26 +105,29 @@ def curate_json(jsonstring):
         denormrows.append(consolidateddict.copy())
 
     lmasterdict = {}
-    return denormrows, lmasterdict
+    return denormrows
 
 if __name__ == "__main__":
-    filename = r'sample_json/v12-businessRecord.json'
 
     # load attributes dictionary
-    filename = r'output/businessRecord_flattened_keys.json'
-    with open(filename, 'r') as f:
-        rawjson = f.read()
+    attribute_filename = r'output/businessRecord_flattened_keys.json'
+    with open(attribute_filename, 'r') as attributesfile:
+        rawjson = attributesfile.read()
         attributes = json.loads(rawjson)
 
     agdenormrows =[]
+
+    filename = r'sample_json/v12-businessRecord.json'
     with open(filename, 'r') as f:
         for line in f:
             jstring = f.readline()
-            denormrows, masterdict = curate_json(jstring)
+            denormrows = curate_json(jstring)
             if denormrows is not None:
                 agdenormrows.extend(denormrows)
 
     with open(r'output/v12_businessRecord.csv', 'w') as awf:
-        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
+        # x01 is ctl-a = the default delimiter for Impala
+        #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
+        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n')
         w.writeheader()
         w.writerows(agdenormrows)
