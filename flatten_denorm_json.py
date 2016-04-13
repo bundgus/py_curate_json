@@ -115,19 +115,18 @@ if __name__ == "__main__":
         rawjson = attributesfile.read()
         attributes = json.loads(rawjson)
 
-    agdenormrows =[]
-
-    filename = r'sample_json/v12-businessRecord.json'
-    with open(filename, 'r') as f:
-        for line in f:
-            jstring = f.readline()
-            denormrows = curate_json(jstring)
-            if denormrows is not None:
-                agdenormrows.extend(denormrows)
-
     with open(r'output/v12_businessRecord.csv', 'w') as awf:
         # x01 is ctl-a = the default delimiter for Impala
         #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
         w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n')
         w.writeheader()
-        w.writerows(agdenormrows)
+
+        filename = r'sample_json/v12-businessRecord.json'
+        with open(filename, 'r') as f:
+            for line in f:
+                jstring = f.readline()
+                denormrows = curate_json(jstring)
+                if denormrows is not None:
+                    w.writerows(denormrows)
+
+
