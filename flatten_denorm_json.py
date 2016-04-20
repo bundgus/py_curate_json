@@ -4,8 +4,8 @@ import csv
 import curate_json_core as cjc
 
 
-def curate_json(jsonstring):
-    denormrows = []
+def flatten_denorm_json(jsonstring):
+    ldenormrows = []
     jsonuuid = str(uuid.uuid4())
 
     try:
@@ -23,6 +23,7 @@ def curate_json(jsonstring):
     cjc.buildgraph(djson, gn)
 
     leafnodes = []
+
     def findleafnodes(node_to_iterate):
         if len(node_to_iterate.successors) < 1:
             leafnodes.append(node_to_iterate)
@@ -41,10 +42,9 @@ def curate_json(jsonstring):
 
     for ln in leafnodes:
         consolidateddict = crawluptree(ln, attributes.copy())
-        denormrows.append(consolidateddict.copy())
+        ldenormrows.append(consolidateddict.copy())
 
-    lmasterdict = {}
-    return denormrows
+    return ldenormrows
 
 if __name__ == "__main__":
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     with open(r'output/businessRecord.csv', 'w') as awf:
         # x01 is ctl-a = the default delimiter for Impala
         #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
-        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n')
+        w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', extrasaction='ignore')
         w.writeheader()
 
         #filename = r'sample_json/v12-businessRecord.json'
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         with open(filename, 'r') as f:
             for line in f:
                 jstring = f.readline()
-                denormrows = curate_json(jstring)
+                denormrows = flatten_denorm_json(jstring)
                 if denormrows is not None:
                     w.writerows(denormrows)
 

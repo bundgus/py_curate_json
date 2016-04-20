@@ -3,9 +3,6 @@ import uuid
 import curate_json_core as cjc
 
 
-masterdict = {}
-
-
 def curate_json(jsonstring):
     ldenormrows = []
     jsonuuid = str(uuid.uuid4())
@@ -47,6 +44,8 @@ def curate_json(jsonstring):
         ldenormrows.append(consolidateddict.copy())
 
     return ldenormrows
+
+masterdict = {}
 
 if __name__ == "__main__":
     filename = r'sample_json/v12-businessRecord.json'
