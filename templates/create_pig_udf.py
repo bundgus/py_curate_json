@@ -11,3 +11,4 @@ def create_pig_udf(graph, prefixname='', parts=[], depth=0, nodename='rootnode')
 
     with open('output\\{}-flatten_json_udf.py'.format(prefixname), 'w') as outfile:
         outfile.write(filetext)
+

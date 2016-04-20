@@ -1,23 +1,15 @@
 {
     "namespace": "ecommercecheckin.sabre.com",
     "type": "record",
-    "name": "ecommercecheckin",
-    "fields": [
+    "name": "businessRecord",
+    "fields": [{% for element in elements %}
       {
-        "name": "bookingTransaction__reservation__bookingDate",
+        "name": "{{element}}",
         "type": [
           "null",
           "string"
         ],
         "default": null
-      },
-      {
-        "name": "httpAnalytics__pageCode",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      }
+      }{% if loop.last != True %},{% endif %}{% endfor %}
     ]
 }
