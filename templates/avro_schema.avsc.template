@@ -1,0 +1,391 @@
+{
+    "namespace": "ecommercecheckin.sabre.com",
+    "type": "record",
+    "name": "ecommercecheckin",
+    "fields": [
+      {
+        "name": "bookingTransaction__reservation__bookingDate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__pageCode",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "ajax__componentType",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__sessionID",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "user__loggedIn",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "debug__log4jMDC__Storefront",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "pageChange__to",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__visitorID",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "storefront__channel",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalBase__amount",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__ipcc",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__route",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__pcc__code",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__referer",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalAncillaries__currency",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "storefront__ipcc",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__total__amount",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "pageChange__action",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__pcc__channel",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__clientIP",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalTax__amount",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__departureDate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__httpStatus",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__duration",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalAncillaries__amount",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__pcc__country",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__threadName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__pcc__stationNumber",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__httpMethod",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "ajax__actionCode",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "debug__log4jMDC__Airline",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "debug__log4jMDC__ipAddress",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "storefront__configVersion",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__airline",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__recordLocator",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__ajax",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "pageChange__from",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__requestUrl",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "storefront__owner",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalTax__currency",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__total__currency",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__priceSummary__totalBase__currency",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "bookingTransaction__reservation__journeySpan",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__userAgent",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "storefront__airline",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__responseSize",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__hostname",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "httpAnalytics__timestamp",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      }
+    ]
+}

@@ -1,60 +1,6 @@
 import json
 import uuid
-
-class JSONGraphNode:
-    def __init__(self, nodename):
-        self.nodename = nodename
-        self.successors = []
-        self.attributes = {}
-        self.predecessor = None
-
-
-def create_key(prefix, element_name):
-    if prefix == '' or prefix is None:
-        return str(element_name)
-    else:
-        return str(prefix) + '__' + str(element_name)
-
-
-def getnodeattributes(jsonnode, graphnode, atpath=''):
-
-    if isinstance(jsonnode, dict):
-        for jnodekey in jsonnode:
-            jnode = jsonnode[jnodekey]
-
-            if isinstance(jnode, dict):
-                newatpath = create_key(atpath, jnodekey)
-                getnodeattributes(jnode, graphnode, atpath=newatpath)
-
-            elif not isinstance(jnode, list):
-                newkey = create_key(atpath, jnodekey)
-                graphnode.attributes[newkey] = str(jnode)
-    # logic for when a list has scalar values only, not a dictionary
-    # e.g. "emails": ["ccc@ccc.com"]
-    else:
-        graphnode.attributes[atpath] = str(jsonnode)
-
-
-def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
-
-    if isinstance(jsonnode, dict):
-        for jnodekey in jsonnode:
-            jnode = jsonnode[jnodekey]
-            if isinstance(jnode, dict):
-                newnodepath = create_key(nodepath, jnodekey)
-                newatpath = create_key(atpath, jnodekey)
-                buildgraph(jnode, parentgraphnode, nodepath=newnodepath, atpath=newatpath)
-
-            elif isinstance(jnode, list):
-                jnode = dict(enumerate(jnode))
-                for key in jnode:
-                    newkey = nodepath + '__' + jnodekey[:] + str(key)
-                    newatpath = create_key(atpath, jnodekey[:])
-                    newigraphnode = JSONGraphNode(newkey)
-                    newigraphnode.predecessor = parentgraphnode
-                    parentgraphnode.successors.append(newigraphnode)
-                    getnodeattributes(jnode[key], newigraphnode, atpath=newatpath)
-                    buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
+import curate_json_core as cjc
 
 
 masterdict = {}
@@ -74,9 +20,9 @@ def curate_json(jsonstring):
     if isinstance(djson, list):
         djson = dict(enumerate(djson))
 
-    gn = JSONGraphNode('rootnode')
-    getnodeattributes(djson, gn, atpath='')
-    buildgraph(djson, gn)
+    gn = cjc.JSONGraphNode('rootnode')
+    cjc.getnodeattributes(djson, gn, atpath='')
+    cjc.buildgraph(djson, gn)
 
     leafnodes = []
 
@@ -104,6 +50,7 @@ def curate_json(jsonstring):
 
 if __name__ == "__main__":
     filename = r'sample_json/v12-businessRecord.json'
+    #filename = r'sample_json/analyticsWeb_SSW2010.2016-04-17-14_WCI_sswhlp1201_inst8-businessRecord.log'
 
     agdenormrows =[]
     with open(filename, 'r') as f:
@@ -116,6 +63,6 @@ if __name__ == "__main__":
     for key in masterdict:
         masterdict[key] = None
 
-    with open(r'output/businessRecord_flattened_keys.json', 'w') as fk:
+    with open(r'output/v12-businessRecord_flattened_keys.json', 'w') as fk:
         fk.write(json.dumps(masterdict, sort_keys=True, indent=4, separators=(',', ': ')))
     print('flat schema written to output/businessRecord_flattened_keys.json')
