@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 if __name__ == "__main__":
 
     # load attributes dictionary
-    attribute_filename = r'output/master-businessRecord_flattened_keys.json'
+    attribute_filename = r'output/json_sample_flattened_keys.json'
     with open(attribute_filename, 'r') as attributesfile:
         rawjson = attributesfile.read()
         attributes = json.loads(rawjson)
