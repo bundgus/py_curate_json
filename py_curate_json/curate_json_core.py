@@ -1,3 +1,48 @@
+import json
+
+
+class CurateJson:
+    def __init__(self):
+        self.masterdict = {'json_uuid': None}
+
+    def curate_json(self, jsonstring):
+        try:
+            if jsonstring != '':
+                djson = json.loads(jsonstring)
+            else:
+                return
+        except:
+            raise Exception('unparsable JSON: ' + jsonstring)
+        if isinstance(djson, list):
+            djson = dict(enumerate(djson))
+
+        gn = JSONGraphNode('rootnode')
+        getnodeattributes(djson, gn, atpath='')
+        buildgraph(djson, gn)
+
+        leafnodes = []
+
+        def findleafnodes(node_to_iterate):
+            if len(node_to_iterate.successors) < 1:
+                leafnodes.append(node_to_iterate)
+            for suc in node_to_iterate.successors:
+                findleafnodes(suc)
+
+        findleafnodes(gn)
+
+        def crawluptree(leafnode):
+            for at in leafnode.attributes:
+                self.masterdict[at] = None
+            if leafnode.predecessor is not None:
+                crawluptree(leafnode.predecessor)
+
+        for ln in leafnodes:
+            crawluptree(ln)
+
+    def get_master_dict(self):
+        return self.masterdict
+
+
 class JSONGraphNode:
     def __init__(self, nodename):
         self.nodename = nodename
@@ -52,6 +97,3 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
                     parentgraphnode.successors.append(newigraphnode)
                     getnodeattributes(jnode[key], newigraphnode, atpath=newatpath)
                     buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
-
-
-

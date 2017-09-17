@@ -1,6 +1,7 @@
 import json
 import uuid
-import curate_json_core as cjc
+
+from py_curate_json import curate_json_core as cjc
 
 
 def flatten_denorm_json(jsonstring, attributes):
