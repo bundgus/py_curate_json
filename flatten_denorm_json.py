@@ -1,6 +1,5 @@
 import json
 import uuid
-import csv
 import curate_json_core as cjc
 
 
@@ -46,7 +45,10 @@ def flatten_denorm_json(jsonstring, attributes):
         consolidateddict = crawluptree(ln, attributes.copy())
         ldenormrows.append(consolidateddict.copy())
 
-    return ldenormrows
+    # deduplicate rows
+    dedup_ldenormrows = [i for n, i in enumerate(ldenormrows) if i not in ldenormrows[n + 1:]]
+
+    return dedup_ldenormrows
 
 
 
