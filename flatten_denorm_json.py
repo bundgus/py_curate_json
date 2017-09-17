@@ -34,7 +34,9 @@ def flatten_denorm_json(jsonstring, attributes):
 
     def crawluptree(leafnode, masterdict):
         for at in leafnode.attributes:
-            masterdict[at] = leafnode.attributes[at]
+            # only set value if attribute is part of masterdict
+            if at in masterdict.keys():
+                masterdict[at] = leafnode.attributes[at]
         if leafnode.predecessor is not None:
             crawluptree(leafnode.predecessor, masterdict)
         masterdict['json_uuid'] = jsonuuid
