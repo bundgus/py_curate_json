@@ -2,7 +2,7 @@ import json
 from py_curate_json import curate_json_core as cjc
 
 
-filename = r'sample_json/json_sample.json'
+filename = r'sample_json/sample.json'
 cj = cjc.CurateJson()
 
 with open(filename, 'r') as f:
@@ -11,5 +11,5 @@ with open(filename, 'r') as f:
 
 md = cj.get_master_dict()
 
-with open(r'output/json_sample_flattened_keys.json', 'w') as fk:
+with open(r'output/sample_flattened_keys.json', 'w') as fk:
     fk.write(json.dumps(md, sort_keys=True, indent=4, separators=(',', ': ')))
