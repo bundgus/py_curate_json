@@ -8,10 +8,10 @@ attribute_filename = r'output/sample_flattened_keys.json'
 with open(attribute_filename, 'r') as attributesfile:
     attributes = json.loads(attributesfile.read())
 
-with open(r'output/sample.csv', 'w') as awf:
+with open(r'output/sample.csv', 'w') as csv_file:
     # x01 is ctl-a = the default delimiter for Impala
     #w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', delimiter='\x01')
-    w = csv.DictWriter(awf, sorted(attributes.keys()), lineterminator='\n', extrasaction='ignore')
+    w = csv.DictWriter(csv_file, sorted(attributes.keys()), lineterminator='\n', extrasaction='ignore')
     w.writeheader()
 
     # data source file.  one JSON record per line.
