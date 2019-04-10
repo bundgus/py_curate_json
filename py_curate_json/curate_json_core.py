@@ -53,12 +53,12 @@ class JSONGraphNode:
 
 def create_key(prefix, element_name):
     if prefix == '' or prefix is None:
-        return str(element_name)
+        return '/' + str(element_name)
     else:
-        return str(prefix) + '__' + str(element_name)
+        return str(prefix) + '/' + str(element_name)
 
 
-def getnodeattributes(jsonnode, graphnode, atpath=''):
+def getnodeattributes(jsonnode, graphnode, atpath='', element_id=None):
 
     if isinstance(jsonnode, dict):
         for jnodekey in jsonnode:
@@ -66,15 +66,21 @@ def getnodeattributes(jsonnode, graphnode, atpath=''):
 
             if isinstance(jnode, dict):
                 newatpath = create_key(atpath, jnodekey)
-                getnodeattributes(jnode, graphnode, atpath=newatpath)
+                getnodeattributes(jnode, graphnode, atpath=newatpath, element_id=element_id)
 
             elif not isinstance(jnode, list):
                 newkey = create_key(atpath, jnodekey)
                 graphnode.attributes[newkey] = str(jnode)
+                if element_id is not None:
+                    element_id_key = create_key(atpath, '@element_id')
+                    graphnode.attributes[element_id_key] = element_id
     # logic for when a list has scalar values only, not a dictionary
     # e.g. "emails": ["ccc@ccc.com"]
     else:
         graphnode.attributes[atpath] = str(jsonnode)
+        if element_id is not None:
+            element_id_key = create_key(atpath, '@element_id')
+            graphnode.attributes[element_id_key] = element_id
 
 
 def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
@@ -90,10 +96,14 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
             elif isinstance(jnode, list):
                 jnode = dict(enumerate(jnode))
                 for key in jnode:
-                    newkey = nodepath + '__' + jnodekey[:] + str(key)
+                    newkey = nodepath + '/' + jnodekey[:] + str(key)
                     newatpath = create_key(atpath, jnodekey[:])
                     newigraphnode = JSONGraphNode(newkey)
+
+                    element_id_key = create_key(newatpath, '@element_id')
+                    newigraphnode.attributes[element_id_key] = key
+
                     newigraphnode.predecessor = parentgraphnode
                     parentgraphnode.successors.append(newigraphnode)
-                    getnodeattributes(jnode[key], newigraphnode, atpath=newatpath)
+                    getnodeattributes(jnode[key], newigraphnode, atpath=newatpath, element_id=key)
                     buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)

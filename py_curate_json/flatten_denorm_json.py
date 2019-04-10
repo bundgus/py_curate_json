@@ -46,10 +46,18 @@ def flatten_denorm_json(jsonstring, attributes):
         consolidateddict = crawluptree(ln, attributes.copy())
         ldenormrows.append(consolidateddict.copy())
 
-    # deduplicate rows
-    dedup_ldenormrows = [i for n, i in enumerate(ldenormrows) if i not in ldenormrows[n + 1:]]
+    return ldenormrows
 
+    '''
+    skip deduplication
+    # print('len ldenormrows', len(ldenormrows))
+    # deduplicate rows
+    # https://stackoverflow.com/questions/9427163/remove-duplicate-dict-in-list-in-python
+    dedup_ldenormrows = [i for n, i in enumerate(ldenormrows) if i not in ldenormrows[n + 1:]]
+    #print('len dedup_ldenormrows', len(dedup_ldenormrows))
+    
     return dedup_ldenormrows
+    '''
 
 
 
