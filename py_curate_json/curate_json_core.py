@@ -101,9 +101,9 @@ def buildgraph(jsonnode, parentgraphnode, nodepath='', atpath=''):
                     newigraphnode = JSONGraphNode(newkey)
 
                     element_id_key = create_key(newatpath, '@element_id')
-                    newigraphnode.attributes[element_id_key] = key
+                    newigraphnode.attributes[element_id_key] = key + 1
 
                     newigraphnode.predecessor = parentgraphnode
                     parentgraphnode.successors.append(newigraphnode)
-                    getnodeattributes(jnode[key], newigraphnode, atpath=newatpath, element_id=key)
+                    getnodeattributes(jnode[key], newigraphnode, atpath=newatpath, element_id=key + 1)
                     buildgraph(jnode[key], newigraphnode, nodepath=newkey, atpath=newatpath)
