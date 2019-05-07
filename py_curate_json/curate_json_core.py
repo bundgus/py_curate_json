@@ -1,9 +1,10 @@
+# Mark Bundgus 2019
 import json
 
 
 class CurateJson:
     def __init__(self):
-        self.masterdict = {'json_uuid': None}
+        self.masterdict = {'document_uuid': None}
 
     def curate_json(self, jsonstring):
         try:
@@ -42,6 +43,9 @@ class CurateJson:
     def get_master_dict(self):
         return self.masterdict
 
+    def set_master_dict(self, json_master_dict):
+        self.masterdict = json.loads(json_master_dict)
+
 
 class JSONGraphNode:
     def __init__(self, nodename):
@@ -66,7 +70,7 @@ def getnodeattributes(jsonnode, graphnode, atpath='', element_id=None):
 
             if isinstance(jnode, dict):
                 newatpath = create_key(atpath, jnodekey)
-                getnodeattributes(jnode, graphnode, atpath=newatpath, element_id=element_id)
+                getnodeattributes(jnode, graphnode, atpath=newatpath, element_id=1)
 
             elif not isinstance(jnode, list):
                 newkey = create_key(atpath, jnodekey)

@@ -1,3 +1,4 @@
+# Mark Bundgus 2019
 import json
 import uuid
 
@@ -6,7 +7,7 @@ from py_curate_json import curate_json_core as cjc
 
 def flatten_denorm_json(jsonstring, attributes):
     ldenormrows = []
-    jsonuuid = str(uuid.uuid4())
+    recorduuid = str(uuid.uuid4())
 
     try:
         if jsonstring != '':
@@ -39,7 +40,7 @@ def flatten_denorm_json(jsonstring, attributes):
                 masterdict[at] = leafnode.attributes[at]
         if leafnode.predecessor is not None:
             crawluptree(leafnode.predecessor, masterdict)
-        masterdict['json_uuid'] = jsonuuid
+        masterdict['document_uuid'] = recorduuid
         return masterdict
 
     for ln in leafnodes:
@@ -47,17 +48,3 @@ def flatten_denorm_json(jsonstring, attributes):
         ldenormrows.append(consolidateddict.copy())
 
     return ldenormrows
-
-    '''
-    skip deduplication
-    # print('len ldenormrows', len(ldenormrows))
-    # deduplicate rows
-    # https://stackoverflow.com/questions/9427163/remove-duplicate-dict-in-list-in-python
-    dedup_ldenormrows = [i for n, i in enumerate(ldenormrows) if i not in ldenormrows[n + 1:]]
-    #print('len dedup_ldenormrows', len(dedup_ldenormrows))
-    
-    return dedup_ldenormrows
-    '''
-
-
-
