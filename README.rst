@@ -12,6 +12,8 @@ For a file with a list of JSON records (one per line), first run the curate scri
 Then run the flatten/denormalize scipt to actually flatten the JSON according to the derived schema and output as a csv file.
 
 ToDo: configurable column sub-name delimiter
+ToDo: unique short column names
+ToDo: leverage XML Schema when converting from XML to JSON (arrays vs objects)
 ToDo: allow retaining external branch values during the flattening/denormalization step (e.g. retain_external_branch_values=False).
 
 
