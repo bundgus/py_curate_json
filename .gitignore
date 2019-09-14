@@ -51,3 +51,5 @@ fabric.properties
 .idea/misc.xml
 .idea/modules.xml
 .idea/py_curate_json.iml
+
+.idea/*
